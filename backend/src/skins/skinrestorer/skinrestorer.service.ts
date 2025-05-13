@@ -23,22 +23,8 @@ export class SkinrestorerService implements OnModuleInit {
         }
 
         try {
-            this.srInstance = new Skinrestorer(host, user, password, database, (err: any) => {
-                if (err) {
-                    this.logger.error('Error connecting to Skinrestorer:', err);
-                } else {
-                    this.isConnected = true;
-                    this.logger.log('Connected to Skinrestorer database');
-                }
-            })
-
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for connection to establish
-
-            if (!this.isConnected) {
-                this.logger.error('Failed to connect to Skinrestorer database');
-            } else {
-                this.logger.log('Skinrestorer service initialized successfully');
-            }
+            this.srInstance = new Skinrestorer(host, user, password, database);
+            this.isConnected = true;
         } catch (error) {
             this.logger.error('Error initializing Skinrestorer service:', error);
             this.isConnected = false;

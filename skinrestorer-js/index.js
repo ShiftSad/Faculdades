@@ -4,9 +4,9 @@ const TABLE_PREFIX = 'sr_';
 class Skinrestorer {
     constructor(
         hostname,
-        database,
         username,
         password,
+        database,
     ) {
         this.con = mysql.createConnection({
             host: hostname,
@@ -17,7 +17,7 @@ class Skinrestorer {
 
         this.con.connect((err) => {
             if (err) throw err;
-            console.log("Connected to Skinrestorer database!");
+            // console.log("Connected to Skinrestorer database!");
         });
     }
 
@@ -163,3 +163,5 @@ class Skinrestorer {
         return capeURL;
     }
 }
+
+module.exports = Skinrestorer;
