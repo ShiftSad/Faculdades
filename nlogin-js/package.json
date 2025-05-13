@@ -23,6 +23,7 @@
   },
   "homepage": "https://gitlab.com/tiagodinis33/nlogin-js",
   "dependencies": {
+    "argon2": "^0.43.0",
     "bcryptjs": "^2.4.3",
     "mysql": "^2.18.1",
     "sprintf-js": "^1.1.2",

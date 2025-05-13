@@ -61,8 +61,10 @@ class nLogin {
     detectAlgorithm(hashed_pass) {
         var algo = (hashed_pass.includes("$") ? hashed_pass.split("$")[1] : '').toUpperCase();
         switch (algo) {
-            case '2':
-            case '2A':
+            case "2":
+            case "2A":
+            case "2Y":
+            case "2B":
                 return this.bcrypt;
 
             case "PBKDF2":
@@ -70,9 +72,9 @@ class nLogin {
                 return null;
 
             case "ARGON2I":
-                // will be added
-                return null;
-
+            case "ARGON2ID":
+                return this.argon2;
+            
             case "SHA256":
                 return this.sha256;
 
@@ -90,8 +92,8 @@ class nLogin {
 
     destruct() {
         if (this.con) {
-             this.con.destroy();
-             this.con = null;
+            this.con.destroy();
+            this.con = null;
         }
     }
 
@@ -171,9 +173,9 @@ class nLogin {
      * @param {string} password the password
      * @return {bool} true whether or not password change was successful
      */
-    changePassword(passwd, username, callback = null) {
+    async changePassword(passwd, username, callback = null) {
         const cleanUsername = username.trim().toLowerCase();
-        var hash = this.hash(passwd);
+        var hash = await this.hash(passwd);
         this.con.query(
             `UPDATE ${TABLE_NAME} SET password = ? WHERE last_name = ?`,
             [hash, cleanUsername],

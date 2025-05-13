@@ -1,5 +1,6 @@
-var bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs")
 const crypto = require('crypto')
+const argon2 = require("argon2");
 
 const sprintf = require('sprintf-js').sprintf
 const uniqid = require('uniqid')
@@ -175,9 +176,31 @@ class SHA256 extends Algorithm{
         }
     }
 }
+
+class Argon2 extends Algorithm {
+  async hash(passwd) {
+    try {
+      return await argon2.hash(passwd, { type: argon2.argon2id });
+    } catch (err) {
+      console.error("Argon2 hashing error:", err);
+      throw err;
+    }
+  }
+
+  async isValid(passwd, hash) {
+    try {
+      return await argon2.verify(hash, passwd);
+    } catch (err) {
+      console.error("Argon2 verification error:", err);
+      return false;
+    }
+  }
+}
+
 module.exports = {
     Algorithm,
     AuthMe,
     BCrypt,
-    SHA256
+    SHA256,
+    Argon2
 }
