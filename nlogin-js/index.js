@@ -1,8 +1,8 @@
-var mysql = require('mysql');
-var algorithms = require('./algorithm')
+const mysql = require('mysql');
+const algorithms = require('./algorithm')
 const TABLE_NAME = 'nlogin'
-class nLogin {
 
+class nLogin {
     constructor(host, username, password, database, callback) {
         this.bcrypt = new algorithms.BCrypt();
         this.sha256 = new algorithms.SHA256();
@@ -28,7 +28,7 @@ class nLogin {
     getHashedPassword(username, callback) {
         username = username.trim();
         this.con.query(
-            'SELECT password FROM nlogin WHERE name = ? LIMIT 1',
+            'SELECT password FROM nlogin WHERE last_name = ? LIMIT 1',
             [username.toLowerCase()],
             (err, result) => {
                 if (err) throw err;
@@ -98,7 +98,7 @@ class nLogin {
     getEmail(username, callback) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            'select email from nlogin where name = ? limit 1',
+            'select email from nlogin where last_name = ? limit 1',
             [cleanUsername],
             (err, result, fields) => {
                 if (err) throw err;
@@ -110,7 +110,7 @@ class nLogin {
     setEmail(username, email, callback = null) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            'UPDATE nlogin SET email = ? WHERE name = ?',
+            'UPDATE nlogin SET email = ? WHERE last_name = ?',
             [email, cleanUsername],
             (err, result, fields) => {
                 if (callback) callback(err == null)
@@ -121,7 +121,7 @@ class nLogin {
     setIp(username, ip, callback = null) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            'UPDATE nlogin SET address = ? WHERE name = ?',
+            'UPDATE nlogin SET last_ip = ? WHERE last_name = ?',
             [ip, cleanUsername],
             (err, result, fields) => {
                 if (callback) callback(err == null)
@@ -132,11 +132,11 @@ class nLogin {
     getIp(username, callback) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            'select address from nlogin where name = ? limit 1',
+            'select last_ip from nlogin where last_name = ? limit 1',
             [cleanUsername],
             (err, result, fields) => {
                 if (err) throw err;
-                callback(result[0] ? result[0].address : null);
+                callback(result[0] ? result[0].last_ip : null);
             }
         )
     }
@@ -144,7 +144,7 @@ class nLogin {
     isUserRegistered(username, callback) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            `SELECT 1 FROM ${TABLE_NAME} WHERE name = ? LIMIT 1`,
+            `SELECT 1 FROM ${TABLE_NAME} WHERE last_name = ? LIMIT 1`,
             [cleanUsername],
             (err, result, fields) => {
                 if (err) throw err;
@@ -155,7 +155,7 @@ class nLogin {
 
     isIpRegistered(address, callback) {
         this.con.query(
-            `SELECT 1 FROM ${TABLE_NAME} WHERE address = ? LIMIT 1`,
+            `SELECT 1 FROM ${TABLE_NAME} WHERE last_ip = ? LIMIT 1`,
             [address],
             (err, result, fields) => {
                 if (err) throw err;
@@ -175,7 +175,7 @@ class nLogin {
         const cleanUsername = username.trim().toLowerCase();
         var hash = this.hash(passwd);
         this.con.query(
-            `UPDATE ${TABLE_NAME} SET password = ? WHERE name = ?`,
+            `UPDATE ${TABLE_NAME} SET password = ? WHERE last_name = ?`,
             [hash, cleanUsername],
             (err, result, fields) => {
                 if (callback) callback(err == null)
@@ -186,46 +186,13 @@ class nLogin {
     getInfo(username, callback) {
         const cleanUsername = username.trim().toLowerCase();
         this.con.query(
-            `select * from ${TABLE_NAME} where name = ? limit 1`,
+            `select * from ${TABLE_NAME} where last_name = ? limit 1`,
             [cleanUsername],
             (err, result, fields) => {
                 if (err) throw err;
                 callback(result[0]);
             }
         )
-    }
-
-    register(username, password, email, ip, callback = null) {
-        const cleanUsername = username.trim().toLowerCase();
-        const userRealName = username.trim();
-        const cleanEmail = email ? email.trim() : "";
-        const cleanIp = ip ? ip.trim() : "";
-
-        const hashedPassword = this.hash(password);
-
-        this.isUserRegistered(userRealName, (isRegistered) => {
-            if (isRegistered) {
-                this.con.query(
-                    `update ${TABLE_NAME} set email = ?, address = ?, password = ? where name = ?`,
-                    [cleanEmail, cleanIp, hashedPassword, cleanUsername],
-                    (err, result, fields) => {
-                        if (callback) {
-                            callback(false, err == null);
-                        }
-                    }
-                );
-            } else {
-                this.con.query(
-                    `insert into ${TABLE_NAME} (name, realname, address, password, email) values (?, ?, ?, ?, ?)`,
-                    [cleanUsername, userRealName, cleanIp, hashedPassword, cleanEmail],
-                    (err, result, fields) => {
-                        if (callback) {
-                            callback(true, err == null);
-                        }
-                    }
-                );
-            }
-        });
     }
 }
 module.exports = nLogin;
