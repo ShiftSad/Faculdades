@@ -27,22 +27,29 @@ class nLogin {
      */
     getHashedPassword(username, callback) {
         username = username.trim();
-        this.con.query(`select password from nlogin where name = '${username.toLowerCase()}' limit 1`, (err, result, fields) => {
-            if (err) throw err;
-            callback(result[0]? result[0].password: "")
-        })
+        this.con.query(
+            'SELECT password FROM nlogin WHERE name = ? LIMIT 1',
+            [username.toLowerCase()],
+            (err, result) => {
+                if (err) throw err;
+                callback(result[0] ? result[0].password : "")
+            }
+        )
     }
+
     checkPassword(username, password, callback) {
         this.getHashedPassword(username, (hash) => {
             if (hash) {
                 var algorithm = this.detectAlgorithm(hash);
                 if (algorithm) {
                     callback(algorithm.isValid(password, hash))
+                } else {
+                    callback(false);
                 }
-            } else callback(false)
-
+            } else {
+                callback(false);
+            }
         });
-
     }
 
     /**
@@ -76,101 +83,149 @@ class nLogin {
                 return null;
         }
     }
+
     hash(passwd) {
         return this.def_algo.hash(passwd);
     }
+
     destruct() {
-        this.con.destroy()
-        this.con = null;
+        if (this.con) {
+             this.con.destroy();
+             this.con = null;
+        }
     }
+
     getEmail(username, callback) {
-
-        username = username.trim();
-        this.con.query(`select email from nlogin where name = '${username.toLowerCase()}' limit 1`, (err, result, fields) => {
-            if (err) throw err;
-            callback(result[0]?result[0].email:null)
-        })
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            'select email from nlogin where name = ? limit 1',
+            [cleanUsername],
+            (err, result, fields) => {
+                if (err) throw err;
+                callback(result[0] ? result[0].email : null)
+            }
+        )
     }
+
     setEmail(username, email, callback = null) {
-        username = username.trim()
-        this.con.query(`UPDATE nlogin SET email = '${email}' WHERE name = '${username.toLowerCase()}'`, (err, result, fields) => {
-            if (callback) callback(err == null)
-        })
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            'UPDATE nlogin SET email = ? WHERE name = ?',
+            [email, cleanUsername],
+            (err, result, fields) => {
+                if (callback) callback(err == null)
+            }
+        )
     }
+
     setIp(username, ip, callback = null) {
-        username = username.trim()
-        this.con.query(`UPDATE nlogin SET address = '${ip}' WHERE name = '${username.toLowerCase()}'`, (err, result, fields) => {
-            if (callback) callback(err == null)
-        })
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            'UPDATE nlogin SET address = ? WHERE name = ?',
+            [ip, cleanUsername],
+            (err, result, fields) => {
+                if (callback) callback(err == null)
+            }
+        )
     }
+
     getIp(username, callback) {
-
-        username = username.trim();
-        this.con.query(`select address from nlogin where name = '${username.toLowerCase()}' limit 1`, (err, result, fields) => {
-            if (err) throw err;
-            callback(result[0]?result[0].ip: null)
-        })
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            'select address from nlogin where name = ? limit 1',
+            [cleanUsername],
+            (err, result, fields) => {
+                if (err) throw err;
+                callback(result[0] ? result[0].address : null);
+            }
+        )
     }
+
     isUserRegistered(username, callback) {
-        username = username.trim();
-        this.con.query(`SELECT 1 FROM ${TABLE_NAME} WHERE name = '${username.toLowerCase()}' LIMIT 1`, (err, result, fields) => {
-            if (err) throw err
-
-            callback(result.length > 0)
-        });
-
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            `SELECT 1 FROM ${TABLE_NAME} WHERE name = ? LIMIT 1`,
+            [cleanUsername],
+            (err, result, fields) => {
+                if (err) throw err;
+                callback(result.length > 0);
+            }
+        );
     }
+
     isIpRegistered(address, callback) {
-        this.con.query('SELECT 1 FROM ' + TABLE_NAME + ' WHERE address = "' + address + '" LIMIT 1', (err, result, fields) => {
-
-            callback(result.length > 0)
-
-        });
-
-
+        this.con.query(
+            `SELECT 1 FROM ${TABLE_NAME} WHERE address = ? LIMIT 1`,
+            [address],
+            (err, result, fields) => {
+                if (err) throw err;
+                callback(result.length > 0);
+            }
+        );
     }
+
     /**
      * Changes password for player.
      *
      * @param {string} username the username
      * @param {string} password the password
-     * @return {bool} true whether or not password change was successful 
+     * @return {bool} true whether or not password change was successful
      */
     changePassword(passwd, username, callback = null) {
-        username = username.trim()
-        var hash = this.hash(passwd)
-        this.con.query(`UPDATE nlogin SET password = '${hash}' WHERE name = '${username.toLowerCase()}'`, (err, result, fields) => {
-            if (callback) callback(err == null)
-        })
-
+        const cleanUsername = username.trim().toLowerCase();
+        var hash = this.hash(passwd);
+        this.con.query(
+            `UPDATE ${TABLE_NAME} SET password = ? WHERE name = ?`,
+            [hash, cleanUsername],
+            (err, result, fields) => {
+                if (callback) callback(err == null)
+            }
+        )
     }
+
     getInfo(username, callback) {
-
-        username = username.trim();
-        this.con.query(`select * from nlogin where name = '${username.toLowerCase()}' limit 1`, (err, result, fields) => {
-            if (err) throw err;
-            callback(result[0]);
-        })
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            `select * from ${TABLE_NAME} where name = ? limit 1`,
+            [cleanUsername],
+            (err, result, fields) => {
+                if (err) throw err;
+                callback(result[0]);
+            }
+        )
     }
-    register(username, password, email, ip, callback = null) {
-        var username = username.trim()
-        var email = email ? email : ""
-        var hash = this.hash(password)
-        var usernameLowerCase = username.toLowerCase()
-        if (this.isUserRegistered(username)) {
-            this.con.query(`update ${TABLE_NAME} set email = '${email}',address='${ip}',password='${hash}' where name = '${usernameLowerCase}'`, (err, result, fields) => {
-                if (callback != null) {
-                    callback(false, err == null)
-                }
-            })
 
-        } else {
-            this.con.query(`insert into ${TABLE_NAME} (name,realname,address,password, email) values ('${usernameLowerCase}', '${username}', '${address}','${password}','${email}')`, (err, result, fields) => {
-                if (callback != null) {
-                    callback(true, err == null)
-                }
-            })
-        }
+    register(username, password, email, ip, callback = null) {
+        const cleanUsername = username.trim().toLowerCase();
+        const userRealName = username.trim();
+        const cleanEmail = email ? email.trim() : "";
+        const cleanIp = ip ? ip.trim() : "";
+
+        const hashedPassword = this.hash(password);
+
+        this.isUserRegistered(userRealName, (isRegistered) => {
+            if (isRegistered) {
+                this.con.query(
+                    `update ${TABLE_NAME} set email = ?, address = ?, password = ? where name = ?`,
+                    [cleanEmail, cleanIp, hashedPassword, cleanUsername],
+                    (err, result, fields) => {
+                        if (callback) {
+                            callback(false, err == null);
+                        }
+                    }
+                );
+            } else {
+                this.con.query(
+                    `insert into ${TABLE_NAME} (name, realname, address, password, email) values (?, ?, ?, ?, ?)`,
+                    [cleanUsername, userRealName, cleanIp, hashedPassword, cleanEmail],
+                    (err, result, fields) => {
+                        if (callback) {
+                            callback(true, err == null);
+                        }
+                    }
+                );
+            }
+        });
     }
 }
-module.exports = nLogin
+module.exports = nLogin;
