@@ -47,20 +47,47 @@ loginForm?.addEventListener("submit", async (e) => {
   loginSpinner.classList.remove("d-none");
   
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    loginMessage.innerHTML = `
-      <div class="alert alert-success" role="alert">
-        <i class="fas fa-check-circle me-2"></i>Login bem-sucedido! // Traduzido
-      </div>
-    `;
+    const response = await fetch("http://localhost:3000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: usernameInput.value,
+        password: passwordInput.value,
+      }),
+    });
+  
+    if (response.status === 401) {
+      loginMessage.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-circle me-2"></i>Falha no login. Verifique suas credenciais
+        </div>
+      `;
+      return;
+    }
 
-    // window.location.href = '/dashboard';
-    
+    if (response.status == 201) {
+      loginMessage.innerHTML = `
+        <div class="alert alert-success" role="alert">
+          <i class="fas fa-check-circle me-2"></i>Login bem-sucedido!
+        </div>
+      `;
+
+      const data = await response.json();
+      const token = data.token;
+      const expiresIn = data.expiresIn;
+      const expirationDate = new Date(Date.now() + expiresIn * 1000);
+      localStorage.setItem("token", token);
+      localStorage.setItem("expirationDate", expirationDate.toISOString());
+      localStorage.setItem("username", usernameInput.value);
+
+      // window.location.href = '/dashboard';
+    }
   } catch (error) {
     loginMessage.innerHTML = `
       <div class="alert alert-danger" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i>Falha no login. Verifique suas credenciais. // Traduzido
+        <i class="fas fa-exclamation-circle me-2"></i>Falha no login. Verifique suas credenciais.
       </div>
     `;
   } finally {
