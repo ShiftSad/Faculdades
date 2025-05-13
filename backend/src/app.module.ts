@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StatisticsService } from './statistics/statistics.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StatisticsModule } from './statistics/statistics.module';
+import { SkinsModule } from './skins/skins.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { StatisticsModule } from './statistics/statistics.module';
       }),
     }),
     AuthModule,
-    StatisticsModule
+    StatisticsModule,
+    SkinsModule
   ],
   controllers: [AppController],
   providers: [AppService],

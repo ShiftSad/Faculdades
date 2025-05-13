@@ -9,13 +9,13 @@ export class NloginService implements OnModuleInit {
     private nloginInstance: any;
     private isConnected = false;
 
-    constructor(private configService: ConfigService) { } 
+    constructor(private config: ConfigService) { } 
 
     async onModuleInit() {
-        const host = this.configService.get<string>('NLOGIN_DB_HOST');
-        const user = this.configService.get<string>('NLOGIN_DB_USER');
-        const password = this.configService.get<string>('NLOGIN_DB_PASSWORD');
-        const database = this.configService.get<string>('NLOGIN_DB_DATABASE');
+        const host = this.config.get<string>('NLOGIN_DB_HOST');
+        const user = this.config.get<string>('NLOGIN_DB_USER');
+        const password = this.config.get<string>('NLOGIN_DB_PASSWORD');
+        const database = this.config.get<string>('NLOGIN_DB_DATABASE');
 
         if (!host || !user || !password || !database) {
             this.logger.error('Nlogin configuration is missing');
