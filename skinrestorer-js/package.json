@@ -1,0 +1,19 @@
+{
+  "name": "skinrestorer",
+  "version": "1.0.0",
+  "description": "Get a player skin from Skinrestorer's database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "minecraft",
+    "skin",
+    "skinrestorer"
+  ],
+  "author": "ShiftSad",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}

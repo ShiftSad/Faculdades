@@ -7,6 +7,7 @@ class nLogin {
         this.bcrypt = new algorithms.BCrypt();
         this.sha256 = new algorithms.SHA256();
         this.authme = new algorithms.AuthMe();
+        this.argon2 = new algorithms.Argon2();
         this.def_algo = this.bcrypt;
         this.con = mysql.createConnection({
             host: host,
