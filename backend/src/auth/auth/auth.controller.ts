@@ -1,10 +1,14 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { NloginService } from '../nlogin/nlogin.service';
 import { LoginDto } from '../dto/nlogin.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private nloginService: NloginService) { }
+    constructor(
+        private nloginService: NloginService,
+        private jwtService: JwtService,
+    ) { }
 
     @Post('login')
     async login(@Body() loginDto: LoginDto) {
@@ -15,10 +19,19 @@ export class AuthController {
             );
 
             if (isPasswordCorrect) {
+                const payload = { 
+                    username: loginDto.username,
+                    sub: loginDto.username
+                };
+
+                const token = this.jwtService.sign(payload);
+                
                 return {
                     success: true,
                     message: "Authentication successful",
-                }
+                    token,
+                    expiresIn: 3600 // 60 minutes in seconds
+                };
             }  else {
                 throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
             }
