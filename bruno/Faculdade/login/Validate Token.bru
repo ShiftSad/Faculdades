@@ -1,0 +1,17 @@
+meta {
+  name: Validate Token
+  type: http
+  seq: 4
+}
+
+post {
+  url: 127.0.0.1:3000/auth/validate
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNoaWZ0X1NhZCIsInN1YiI6IlNoaWZ0X1NhZCIsImlhdCI6MTc0NzExMDc3MCwiZXhwIjoxNzQ3MTE0MzcwfQ.k0hvSKmN7mTOw6lCafmm0AV9cBxDLV-jowiKm_2jhrg"
+  }
+}

@@ -44,4 +44,19 @@ export class AuthController {
             throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Post('validate')
+    async logout(@Body() body: { token: string }) {
+        try {
+            const decoded = this.jwtService.verify(body.token);
+            return {
+                success: true,
+                message: "Token is valid",
+                data: decoded
+            };
+        } catch (error) {
+            console.error('Token validation error:', error.message);
+            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
