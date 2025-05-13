@@ -4,28 +4,152 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Skin Viewer</title>
-    <!-- Vite will inject CSS here -->
     <script type="module" src="/src/dashboard.ts"></script>
     <style>
         body {
-            background-color: #f0f0f0; /* Light gray background */
+            background-image: url('/background/background-1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .skin-viewer-section {
+            background-color: rgba(255, 255, 255, 0); /* Almost transparent */
+        }
+        
+        .glass-effect {
+            background-color: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        }
+        
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .content-card.p-2 {
+            padding: 0 !important; /* Remove padding from armor cards */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: unset;
+            min-width: unset;
+            box-shadow: none;
+        }
+        
+        .armor-item {
+            height: 100px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 0; 
+        }
+        
+        .armor-img {
+            height: 64px;
+            width: 64px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            image-rendering: pixelated;
         }
     </style>
 </head>
 <body>
-    <div id="skin-viewer-wrapper">
-        <div id="user-info" class="mb-3">
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+            <!-- Skin Viewer Section (30%) -->
+            <div class="col-md-4 skin-viewer-section p-3">
+                <div id="skin-viewer-wrapper" class="d-flex flex-column h-100">
+                    <div id="user-info" class="mb-3 text-white">
+                        <!-- User information will go here -->
+                    </div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <canvas id="skin_container" class="img-fluid"></canvas>
+                    </div>
+                    <div id="status-message" class="mt-3 text-white">
+                        <!-- Status messages will appear here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Section (70%) with glass effect -->
+            <div class="col-md-8 p-4">
+                <div class="content-area glass-effect p-4">
+                    <h2 class="text-dark mb-4">Statísticas para <span id="badge"><span id="username"></span></span></h2>
+
+                    <!-- User Stats -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="content-card p-3">
+                                <div class="row">
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <p class="mb-1 fw-bold">Joined:</p>
+                                        <p id="joined" class="mb-0">-</p>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <p class="mb-1 fw-bold">Purse:</p>
+                                        <p id="purse" class="mb-0">-</p>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <p class="mb-1 fw-bold">Bank:</p>
+                                        <p id="bank" class="mb-0">-</p>
+                                    </div>
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <p class="mb-1 fw-bold">Playtime:</p>
+                                        <p id="playtime" class="mb-0">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Armor -->
+                    <h4 class="text-dark mb-3">Armor</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="content-card p-2">
+                                <div class="armor-item">
+                                    <img src="/armor/diamond_helmet.png" alt="Helmet" class="armor-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="content-card p-2">
+                                <div class="armor-item">
+                                    <img src="/armor/diamond_chestplate.png" alt="Chestplate" class="armor-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="content-card p-2">
+                                <div class="armor-item">
+                                    <img src="/armor/diamond_leggings.png" alt="Leggings" class="armor-img">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="content-card p-2">
+                                <div class="armor-item">
+                                    <img src="/armor/diamond_boots.png" alt="Boots" class="armor-img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <canvas id="skin_container"></canvas>
-        <div id="status-message" class="mt-3"></div>
     </div>
 </body>
 </html>

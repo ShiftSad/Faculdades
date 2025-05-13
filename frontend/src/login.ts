@@ -82,7 +82,7 @@ loginForm?.addEventListener("submit", async (e) => {
       localStorage.setItem("expirationDate", expirationDate.toISOString());
       localStorage.setItem("username", usernameInput.value);
 
-      // window.location.href = '/dashboard';
+      window.location.href = '/dashboard.html';
     }
   } catch (error) {
     loginMessage.innerHTML = `
