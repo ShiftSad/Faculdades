@@ -1,6 +1,10 @@
 const mysql = require('mysql');
 const TABLE_PREFIX = 'sr_';
 
+// Load file hardcoded_skins.json
+const fs = require('fs');
+const hardcodedSkins = JSON.parse(fs.readFileSync(__dirname + '/hardcoded_skins.json', 'utf8'));
+
 class Skinrestorer {
     constructor(
         hostname,
@@ -102,28 +106,45 @@ class Skinrestorer {
                             return;
                         }
 
-                        if (skinType !== "URL") {
-                            resolve(null);
-                            return;
+                        if (skinType == "URL") {
+                            // Handle URL skin type
+                            this.con.query(
+                                `SELECT value from ${TABLE_PREFIX}url_skins WHERE url = ? LIMIT 1`,
+                                [skinIdentifier],
+                                (err, result) => {
+                                    if (err) {
+                                        console.error("Error fetching URL skin data:", err);
+                                        reject(err);
+                                    } 
+                                    else {
+                                        const base64 = result[0] ? result[0].value : null;
+                                        const skinData = base64 ? Buffer.from(base64, 'base64').toString('utf-8') : null;
+
+                                        resolve(skinData);
+                                    }
+                                }
+                            );
                         }
 
-                        // Handle URL skin type
-                        this.con.query(
-                            `SELECT value from ${TABLE_PREFIX}url_skins WHERE url = ? LIMIT 1`,
-                            [skinIdentifier],
-                            (err, result) => {
-                                if (err) {
-                                    console.error("Error fetching URL skin data:", err);
-                                    reject(err);
-                                } 
-                                else {
-                                    const base64 = result[0] ? result[0].value : null;
-                                    const skinData = base64 ? Buffer.from(base64, 'base64').toString('utf-8') : null;
-
-                                    resolve(skinData);
+                        if (skinType == "CUSTOM") {
+                            const skinDataBase64 = hardcodedSkins[skinIdentifier];
+                            if (skinDataBase64) {
+                                const skinValue = hardcodedSkins[skinIdentifier].value;
+                                if (!skinValue) {
+                                    console.error("Hardcoded skin value not found for identifier:", skinIdentifier);
+                                    resolve(null);
+                                    return;
                                 }
+
+                                const skinData = Buffer.from(skinValue, 'base64').toString('utf-8');
+                                
+                                resolve(skinData);
+                            } else {
+                                // Handle case where skin data is not found
+                                console.error("Hardcoded skin not found for identifier:", skinIdentifier);
+                                resolve(null);
                             }
-                        );
+                        }
                     }
                 }
             );
