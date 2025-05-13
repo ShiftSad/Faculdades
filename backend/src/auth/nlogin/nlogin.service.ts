@@ -58,4 +58,18 @@ export class NloginService implements OnModuleInit {
             });
         });
     }
+
+    getUUID(username: string): Promise<string | null> {
+        return new Promise((resolve, reject) => {
+            if (!this.isConnected) {
+                this.logger.error('Nlogin service is not connected');
+                return reject(new Error('Nlogin service is not connected'));
+            }
+
+            this.nloginInstance.getUUID(username, (uuid: string | null) => {
+                this.logger.debug(`getUUID result for user ${username}: ${uuid}`);
+                resolve(uuid);
+            });
+        });
+    }
 }

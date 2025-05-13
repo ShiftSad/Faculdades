@@ -6,8 +6,8 @@ import { JwtService } from '@nestjs/jwt';
 @Controller('auth')
 export class AuthController {
     constructor(
-        private nloginService: NloginService,
-        private jwtService: JwtService,
+        private readonly nloginService: NloginService,
+        private readonly jwtService: JwtService,
     ) { }
 
     @Post('login')

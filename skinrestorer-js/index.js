@@ -21,22 +21,6 @@ class Skinrestorer {
         });
     }
 
-    async getUUID(username) {
-        return new Promise((resolve, reject) => {
-            this.con.query(
-                `SELECT uuid FROM ${TABLE_PREFIX}cache WHERE name = ? LIMIT 1`,
-                [username],
-                (err, result) => {
-                    if (err) {
-                        console.error("Error fetching UUID:", err);
-                        reject(err);
-                    } 
-                    else resolve(result[0] ? result[0].uuid : null);
-                }
-            );
-        });
-    }
-
     async getName(uuid) {
         return new Promise((resolve, reject) => {
             this.con.query(
@@ -72,14 +56,14 @@ class Skinrestorer {
                     } 
                     else {
                         const base64 = result[0] ? result[0].value : null;
-                        const result = base64 ? Buffer.from(base64, 'base64').toString('utf-8') : null;
+                        const skinData = base64 ? Buffer.from(base64, 'base64').toString('utf-8') : null;
 
-                        if (result == null) {
+                        if (skinData == null) {
                             console.error("Skin not found for UUID:", uuid);
                             reject(new Error("Skin not found for UUID: " + uuid));
                         }
 
-                        resolve(result);
+                        resolve(skinData);
                     }
                 }
             )
@@ -113,7 +97,7 @@ class Skinrestorer {
                         }
 
                         if (skinType == "PLAYER") {
-                            this.getDefaultPlayerSkin(uuid)
+                            this.getDefaultPlayerSkin(skinIdentifier)
                                 .then(resolve)
                                 .catch(reject);
                             return;

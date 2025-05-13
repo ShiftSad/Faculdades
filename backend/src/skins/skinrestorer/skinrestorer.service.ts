@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NloginService } from 'src/auth/nlogin/nlogin.service';
 
 const Skinrestorer = require('skinrestorer');
 
@@ -9,7 +10,10 @@ export class SkinrestorerService implements OnModuleInit {
     private srInstance: any;
     private isConnected = false;
 
-    constructor(private config: ConfigService) { }
+    constructor(
+        private readonly config: ConfigService,
+        private readonly nloginService: NloginService
+    ) { }
 
     async onModuleInit() {
         const host = this.config.get<string>('SKINRESTORER_DB_HOST');
@@ -52,7 +56,7 @@ export class SkinrestorerService implements OnModuleInit {
             return null;
         }
 
-        const uuid = await this.srInstance.getUUID(username);
+        const uuid = await this.nloginService.getUUID(username);
         if (!uuid) {
             this.logger.error(`No UUID found for username: ${username}`);
             return null;

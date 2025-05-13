@@ -197,5 +197,22 @@ class nLogin {
             }
         )
     }
+
+    getUUID(username, callback) {
+        const cleanUsername = username.trim().toLowerCase();
+        this.con.query(
+            `SELECT unique_id FROM ${TABLE_NAME} WHERE last_name = ? LIMIT 1`,
+            [cleanUsername],
+            (err, result, fields) => {
+                if (err) throw err;
+                let id = result[0] ? result[0].unique_id : null;
+                if (id) {
+                    // Insert dashes: 8-4-4-4-12
+                    id = id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
+                }
+                callback(id);
+            }
+        );
+    }
 }
 module.exports = nLogin;

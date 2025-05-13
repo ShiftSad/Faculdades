@@ -4,7 +4,7 @@ import { SkinrestorerService } from '../skinrestorer/skinrestorer.service';
 @Controller('skins')
 export class SkinsController {
     constructor(
-        private readonly srService: SkinrestorerService
+        private readonly srService: SkinrestorerService,
     ) { }
 
     private async resolveUUID(identifier: string): Promise<string | null> {
@@ -23,53 +23,110 @@ export class SkinsController {
     }
 
     @Get('skindata/:identifier')
-    async getPlayerSkin(
-        @Param('identifier') identifier: string
-    ): Promise<string | null> {
+    async getPlayerSkin(@Param('identifier') identifier: string) {
         const uuid = await this.resolveUUID(identifier);
-        if (!uuid) return null;
+        if (!uuid) {
+            return {
+                success: false,
+                message: "Invalid identifier or UUID not found"
+            };
+        }
         try {
             const skin = await this.srService.getPlayerSkin(uuid);
-            return skin || null;
+            if (!skin) 
+                return {
+                    success: false,
+                    message: "No skin found for this player"
+                };
+            
+            return {
+                success: true,
+                message: "Skin found",
+                data: JSON.parse(skin)
+            }
         } catch (err) {
-            console.error('Error fetching player skin:', err);
-            return null;
+            return {
+                success: false,
+                message: "Error fetching skin data"
+            }
         }
     }
 
     @Get('skin/:identifier')
-    async getSkinURL(
-        @Param('identifier') identifier: string
-    ): Promise<string | null> {
+    async getSkinURL(@Param('identifier') identifier: string) {
         const uuid = await this.resolveUUID(identifier);
-        if (!uuid) return null;
+        if (!uuid) {
+            return {
+                success: false,
+                message: "Invalid identifier or UUID not found"
+            };
+        }
         try {
             const skin = await this.srService.getPlayerSkin(uuid);
-            if (!skin) return null;
+            if (!skin) {
+                return {
+                    success: false,
+                    message: "No skin found for this player"
+                };
+            }
 
             const skinURL = this.srService.extractSkinURL(skin);
-            return skinURL || null;
+            if (!skinURL) {
+                return {
+                    success: false,
+                    message: "No skin URL found"
+                };
+            }
+
+            return {
+                success: true,
+                message: "Skin URL found",
+                data: skinURL
+            };
         } catch (err) {
-            console.error('Error fetching skin URL:', err);
-            return null;
+            return {
+                success: false,
+                message: "Error fetching skin URL"
+            };
         }
     }
 
     @Get('cape/:identifier')
-    async getCapeURL(
-        @Param('identifier') identifier: string
-    ): Promise<string | null> {
+    async getCapeURL(@Param('identifier') identifier: string) {
         const uuid = await this.resolveUUID(identifier);
-        if (!uuid) return null;
+        if (!uuid) {
+            return {
+                success: false,
+                message: "Invalid identifier or UUID not found"
+            };
+        }
         try {
             const skin = await this.srService.getPlayerSkin(uuid);
-            if (!skin) return null;
+            if (!skin) {
+                return {
+                    success: false,
+                    message: "No skin found for this player"
+                };
+            }
 
             const capeURL = this.srService.extractCapeURL(skin);
-            return capeURL || null;
+            if (!capeURL) {
+                return {
+                    success: false,
+                    message: "No cape URL found"
+                };
+            }
+
+            return {
+                success: true,
+                message: "Cape URL found",
+                data: capeURL
+            };
         } catch (err) {
-            console.error('Error fetching cape URL:', err);
-            return null;
+            return {
+                success: false,
+                message: "Error fetching cape URL"
+            };
         }
     }
 }
