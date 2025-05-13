@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-const Nlogin = require('nlogin-js');
+const Nlogin = require('nlogin');
 
 @Injectable()
 export class NloginService implements OnModuleInit {

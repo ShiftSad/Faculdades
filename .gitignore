@@ -27,3 +27,6 @@ lerna-debug.log*
 /backend/dist-ssr
 /frontend/coverage
 /backend/coverage
+
+# Ignore Minecraft for now
+minecraft
