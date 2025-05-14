@@ -1,0 +1,16 @@
+meta {
+  name: Player history name
+  type: http
+  seq: 4
+}
+
+get {
+  url: 127.0.0.1:3000/statistics/player/0b1e4937-a79d-45c2-8d12-25c210e4080d/history/walkOneCm?startDate=2024-05-02T12:00:00.000Z&endDate=2025-05-14T12:00:00.000Z
+  body: none
+  auth: inherit
+}
+
+params:query {
+  startDate: 2024-05-02T12:00:00.000Z
+  endDate: 2025-05-14T12:00:00.000Z
+}
