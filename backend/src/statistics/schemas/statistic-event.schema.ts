@@ -1,21 +1,41 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose"; 
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
-export class StatisticEvent extends Document {
-    @Prop({ required: true })
-    player_uuid: string;
-
-    @Prop({ required: true })
-    player_name: string;
-
-    @Prop({ required: true })
-    event_type: string;
-
-    @Prop({ type: Object, required: true })	
-    event_data: Record<string, any>;
+export interface StatisticEvent {
+    timePlayedSeconds?: number;
+    blocksMined?: number;
+    playersKilled?: number;
+    deaths?: number;
+    itemsCrafted?: number;
+    distanceTraveledBlocks?: number;
+    cropsHarvested?: CropsHarvested;
 }
 
-export const StatisticEventSchema = SchemaFactory.createForClass(StatisticEvent);
+export interface CropsHarvested {
+    wheat?: number;
+    carrots?: number;
+    potatoes?: number;
+    beetroot?: number;
+    netherWart?: number;
+    melon?: number;
+    pumpkin?: number;
+}
 
-StatisticEventSchema.index({ player_uuid: 1, player_name: 1, event_type: 1, createdAt: 1 }, { unique: true });
+@Schema({
+    timestamps: false,
+    collection: 'playerStatsSnapshots',
+})
+export class StatisticEventSnapshot extends Document {
+    @Prop({ required: true, index: true })
+    playerId: string;
+
+    @Prop({ required: true })
+    timestamp: Date;
+
+    @Prop({ type: Object })
+    stats: StatisticEvent;
+}
+
+export const PlayerStatsSnapshotSchema = SchemaFactory.createForClass(StatisticEventSnapshot);
+
+PlayerStatsSnapshotSchema.index({ playerId: 1, timestamp: 1 });

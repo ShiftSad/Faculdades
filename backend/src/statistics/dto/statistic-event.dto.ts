@@ -1,20 +1,86 @@
 import {
-  IsUUID,
-  IsString,
-  IsNotEmpty,
-  IsObject,
+	IsString,
+	IsNumber,
+	IsDate,
+	IsOptional,
+	ValidateNested,
+	IsNotEmpty,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class CropsHarvestedDto {
+	@IsNumber()
+	@IsOptional()
+	wheat?: number;
+
+	@IsNumber()
+	@IsOptional()
+	carrots?: number;
+
+	@IsNumber()
+	@IsOptional()
+	potatoes?: number;
+
+	@IsNumber()
+	@IsOptional()
+	beetroot?: number;
+
+	@IsNumber()
+	@IsOptional()
+	netherWart?: number;
+
+	@IsNumber()
+	@IsOptional()
+	melon?: number;
+
+	@IsNumber()
+	@IsOptional()
+	pumpkin?: number;
+}
 
 export class StatisticEventDto {
-  @IsUUID('4', { message: 'player_uuid must be a valid UUID' })
-  @IsNotEmpty({ message: 'player_uuid cannot be empty' })
-  player_uuid: string;
+	@IsNumber()
+	@IsOptional()
+	timePlayedSeconds?: number;
 
-  @IsString({ message: 'event_type must be a string' })
-  @IsNotEmpty({ message: 'event_type cannot be empty' })
-  event_type: string;
+	@IsNumber()
+	@IsOptional()
+	blocksMined?: number;
 
-  @IsObject({ message: 'event_data must be a JSON object' })
-  @IsNotEmpty({ message: 'event_data cannot be empty' }) 
-  event_data: Record<string, any>;
+	@IsNumber()
+	@IsOptional()
+	playersKilled?: number;
+
+	@IsNumber()
+	@IsOptional()
+	deaths?: number;
+
+	@IsNumber()
+	@IsOptional()
+	itemsCrafted?: number;
+
+	@IsNumber()
+	@IsOptional()
+	distanceTraveledBlocks?: number;
+
+	@ValidateNested()
+	@Type(() => CropsHarvestedDto)
+	@IsOptional()
+	cropsHarvested?: CropsHarvestedDto;
+}
+
+export class StatisticEventSnapshotDto {
+	@IsString()
+	@IsNotEmpty()
+	playerId: string;
+
+	@IsDate()
+	@Type(() => Date)
+	@IsNotEmpty()
+	timestamp: Date;
+
+	@ValidateNested()
+	@Type(() => StatisticEventDto)
+	@IsNotEmpty()
+	stats: StatisticEventDto;
 }
