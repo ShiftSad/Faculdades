@@ -1,10 +1,11 @@
 package dev.shiftsad.statistics
 
+import dev.shiftsad.statistics.dto.CropsHarvestedDto
 import dev.shiftsad.statistics.dto.StatisticEventDto
 import dev.shiftsad.statistics.dto.StatisticEventSnapshotDto
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
-import org.slf4j.Logger
+import org.bukkit.persistence.PersistentDataType
 import org.slf4j.LoggerFactory
 import java.time.Instant
 
@@ -20,26 +21,26 @@ class PlayerStatsCollector {
         val cropsStats = gatherCropsHarvestedStats(player)
 
         val eventStats = StatisticEventDto(
-            timePlayedSeconds = generalStats[Statistic.PLAY_ONE_MINUTE]?.div(20),
-            playersKilled = generalStats[Statistic.PLAYER_KILLS],
-            deaths = generalStats[Statistic.DEATHS],
-            fishCaught = generalStats[Statistic.FISH_CAUGHT],
-            animalsBred = generalStats[Statistic.ANIMALS_BRED],
-            mobKills = generalStats[Statistic.MOB_KILLS],
-            blocksMined = generalStats[Statistic.MINE_BLOCK],
-            itemsCrafted = generalStats[Statistic.CRAFT_ITEM],
-            walkOneCm = generalStats[Statistic.WALK_ONE_CM],
-            jump = generalStats[Statistic.JUMP],
-            sprintOneCm = generalStats[Statistic.SPRINT_ONE_CM],
-            crouchOneCm = generalStats[Statistic.CROUCH_ONE_CM],
-            fallOneCm = generalStats[Statistic.FALL_ONE_CM],
-            swimOneCm = generalStats[Statistic.SWIM_ONE_CM],
-            flyOneCm = generalStats[Statistic.FLY_ONE_CM],
-            climbOneCm = generalStats[Statistic.CLIMB_ONE_CM],
-            useItem = generalStats[Statistic.USE_ITEM],
-            breakItem = generalStats[Statistic.BREAK_ITEM],
-            talkedToVillager = generalStats[Statistic.TALKED_TO_VILLAGER],
-            tradedWithVillager = generalStats[Statistic.TRADED_WITH_VILLAGER],
+            timePlayedSeconds = generalStats[Statistic.PLAY_ONE_MINUTE]?.div(20) ?: 0,
+            playersKilled = generalStats[Statistic.PLAYER_KILLS] ?: 0,
+            deaths = generalStats[Statistic.DEATHS] ?: 0,
+            fishCaught = generalStats[Statistic.FISH_CAUGHT] ?: 0,
+            animalsBred = generalStats[Statistic.ANIMALS_BRED] ?: 0,
+            mobKills = generalStats[Statistic.MOB_KILLS] ?: 0,
+            blocksMined = generalStats[Statistic.MINE_BLOCK] ?: 0,
+            itemsCrafted = generalStats[Statistic.CRAFT_ITEM] ?: 0,
+            walkOneCm = generalStats[Statistic.WALK_ONE_CM] ?: 0,
+            jump = generalStats[Statistic.JUMP] ?: 0,
+            sprintOneCm = generalStats[Statistic.SPRINT_ONE_CM] ?: 0,
+            crouchOneCm = generalStats[Statistic.CROUCH_ONE_CM] ?: 0,
+            fallOneCm = generalStats[Statistic.FALL_ONE_CM] ?: 0,
+            swimOneCm = generalStats[Statistic.SWIM_ONE_CM] ?: 0,
+            flyOneCm = generalStats[Statistic.FLY_ONE_CM] ?: 0,
+            climbOneCm = generalStats[Statistic.CLIMB_ONE_CM] ?: 0,
+            useItem = generalStats[Statistic.USE_ITEM] ?: 0,
+            breakItem = generalStats[Statistic.BREAK_ITEM] ?: 0,
+            talkedToVillager = generalStats[Statistic.TALKED_TO_VILLAGER] ?: 0,
+            tradedWithVillager = generalStats[Statistic.TRADED_WITH_VILLAGER] ?: 0,
             cropsHarvested = cropsStats,
         )
 
@@ -84,5 +85,17 @@ class PlayerStatsCollector {
             }
         }
         return stats
+    }
+
+    private fun gatherCropsHarvestedStats(player: Player): CropsHarvestedDto {
+        return CropsHarvestedDto(
+            wheat = player.read("wheat", PersistentDataType.INTEGER) as Int? ?: 0,
+            carrots = player.read("carrots", PersistentDataType.INTEGER) as Int? ?: 0,
+            potatoes = player.read("potatoes", PersistentDataType.INTEGER) as Int? ?: 0,
+            beetroot = player.read("beetroot", PersistentDataType.INTEGER) as Int? ?: 0,
+            netherWart = player.read("nether_wart", PersistentDataType.INTEGER) as Int? ?: 0,
+            melon = player.read("melon", PersistentDataType.INTEGER) as Int? ?: 0,
+            pumpkin = player.read("pumpkin", PersistentDataType.INTEGER) as Int? ?: 0
+        )
     }
 }
