@@ -63,6 +63,66 @@ export class StatisticEventDto {
 	@IsOptional()
 	distanceTraveledBlocks?: number;
 
+	@IsNumber()
+	@IsOptional()
+	fishCaught?: number;
+
+	@IsNumber()
+	@IsOptional()
+	animalsBred?: number;
+
+	@IsNumber()
+	@IsOptional()
+	mobKills?: number;
+
+	@IsNumber()
+	@IsOptional()
+	walkOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	jump?: number;
+
+	@IsNumber()
+	@IsOptional()
+	sprintOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	crouchOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	fallOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	swimOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	flyOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	climbOneCm?: number;
+
+	@IsNumber()
+	@IsOptional()
+	useItem?: number;
+
+	@IsNumber()
+	@IsOptional()
+	breakItem?: number;
+
+	@IsNumber()
+	@IsOptional()
+	talkedToVillager?: number;
+
+	@IsNumber()
+	@IsOptional()
+	tradedWithVillager?: number;
+
 	@ValidateNested()
 	@Type(() => CropsHarvestedDto)
 	@IsOptional()

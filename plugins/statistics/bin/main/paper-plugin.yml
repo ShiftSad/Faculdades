@@ -1,0 +1,7 @@
+name: Statistics
+version: 1.0.0
+main: dev.shiftsad.statistics.StatisticsPlugin
+description: Um plugin para coletar estatísticas de jogadores.
+author: ShiftSad
+website: https://mc.shiftsad.dev/
+api-version: '1.21.5'
