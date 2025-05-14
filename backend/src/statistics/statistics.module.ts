@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { StatisticEvent, StatisticEventSchema } from './schemas/statistic-event.schema';
+import { PlayerStatsSnapshotSchema, StatisticEventSnapshot } from './schemas/statistic-event.schema';
 import { StatisticsService } from './statistics.service';
+import { StatisticsController } from './statistics/statistics.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: StatisticEvent.name, schema: StatisticEventSchema }
+      { name: StatisticEventSnapshot.name, schema: PlayerStatsSnapshotSchema }
     ]),
   ],
   providers: [StatisticsService],
   exports: [StatisticsService],
+  controllers: [StatisticsController],
 })
 export class StatisticsModule {}
