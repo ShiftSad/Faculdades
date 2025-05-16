@@ -4,12 +4,14 @@ import { StatisticEventSnapshotDto } from '../dto/statistic-event.dto';
 import { ConfigService } from '@nestjs/config';
 import { StatisticEventSnapshot } from '../schemas/statistic-event.schema';
 import { GraphableStatisticName, StatisticHistoryQueryDto } from '../dto/graphable-statistic.dto';
+import { NloginService } from 'src/auth/nlogin/nlogin.service';
 
 @Controller('statistics')
 export class StatisticsController {
 
     constructor(
         private readonly statisticsService: StatisticsService,
+        private readonly nloginService: NloginService,
         private readonly configService: ConfigService,
     ) {}
 
@@ -39,18 +41,20 @@ export class StatisticsController {
 
     @Get('player/:playerId')
     async getStatisticsByPlayerId(@Param('playerId') playerId: string): Promise<StatisticEventSnapshot[]> {
-        const events = await this.statisticsService.findByPlayerId(playerId);
+        const uuid = await this.resolvePlayerUUID(playerId);
+        const events = await this.statisticsService.findByPlayerId(uuid);
         if (!events || events.length === 0) {
-            throw new NotFoundException(`No statistics found for player ID ${playerId}`);
+            throw new NotFoundException(`No statistics found for player ID ${uuid}`);
         }
         return events;
     }
 
     @Get('player/:playerId/latest')
     async getLatestStatisticsByPlayerId(@Param('playerId') playerId: string): Promise<StatisticEventSnapshot> {
-        const event = await this.statisticsService.findLatestByPlayerId(playerId);
+        const uuid = await this.resolvePlayerUUID(playerId);
+        const event = await this.statisticsService.findLatestByPlayerId(uuid);
         if (!event) {
-            throw new NotFoundException(`No latest statistics found for player ID ${playerId}`);
+            throw new NotFoundException(`No latest statistics found for player ID ${uuid}`);
         }
         return event;
     }
@@ -62,12 +66,28 @@ export class StatisticsController {
         @Param('statisticName', new ParseEnumPipe(GraphableStatisticName)) statisticName: GraphableStatisticName,
         @Query() query: StatisticHistoryQueryDto,
     ): Promise<{ timestamp: Date; value: number | undefined }[]> {
+        const uuid = await this.resolvePlayerUUID(playerId);
         const { startDate, endDate } = query;
         if (startDate >= endDate) {
             throw new BadRequestException('End date must be after start date.');
         }
-        
-        const historyData = await this.statisticsService.getStatisticHistoryForPlayer(playerId, statisticName, startDate, endDate);
+        const historyData = await this.statisticsService.getStatisticHistoryForPlayer(uuid, statisticName, startDate, endDate);
         return historyData;
+    }
+
+    private isUUID(uuid: string): boolean {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(uuid);
+    }
+
+    private async resolvePlayerUUID(identifier: string): Promise<string> {
+        if (this.isUUID(identifier)) {
+            return identifier;
+        }
+        const uuid = await this.nloginService.getUUID(identifier);
+        if (!uuid) {
+            throw new NotFoundException(`Player not found with identifier ${identifier}`);
+        }
+        return uuid;
     }
 }
