@@ -1,0 +1,4 @@
+name: movement
+version: '1.0.0'
+main: dev.shiftsad.movement.Movement
+api-version: '1.21'

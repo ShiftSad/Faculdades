@@ -7,4 +7,7 @@ pluginManagement {
 
 rootProject.name = "plugins"
 
-include("statistics")
+include(
+  "statistics",
+  "movement"
+)

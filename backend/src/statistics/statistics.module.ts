@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PlayerStatsSnapshotSchema, StatisticEventSnapshot } from './schemas/statistic-event.schema';
 import { StatisticsService } from './statistics.service';
 import { StatisticsController } from './statistics/statistics.controller';
+import { NloginService } from 'src/auth/nlogin/nlogin.service';
 
 @Module({
   imports: [
@@ -10,7 +11,10 @@ import { StatisticsController } from './statistics/statistics.controller';
       { name: StatisticEventSnapshot.name, schema: PlayerStatsSnapshotSchema }
     ]),
   ],
-  providers: [StatisticsService],
+  providers: [
+    StatisticsService,
+    NloginService
+  ],
   exports: [StatisticsService],
   controllers: [StatisticsController],
 })
